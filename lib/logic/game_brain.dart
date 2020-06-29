@@ -3,28 +3,31 @@ import 'dart:math';
 class Game {
   int _a;
   int _b;
-  int rightAnswer;
-  int wrongAnswer;
+  int _rightAnswer;
+  int _rightAnswerKey;
+  int _wrongAnswer;
+  int _score = 0;
   String mathOperator;
   final _random = new Random();
 
-  Map answers = Map();
+  Map _answers = Map();
 
   String generateEquation() {
-    _a = Random().nextInt(100);
-    _b = Random().nextInt(100);
+    _a = Random().nextInt(20);
+    _b = Random().nextInt(20);
     return '$_a + $_b';
   }
 
-  void generateRightAnswer(List<int> randomKeyList) {
+  void _generateRightAnswer(List<int> randomKeyList) {
     //generateEquation();
-    rightAnswer = _a + _b;
-    answers[randomKeyNumber(randomKeyList)] = rightAnswer;
+    _rightAnswer = _a + _b;
+    _rightAnswerKey = _randomKeyNumber(randomKeyList);
+    _answers[_rightAnswerKey] = _rightAnswer;
   }
 
-  int generateWrongAnswer() => next(rightAnswer - 5, rightAnswer + 5);
+  int _generateWrongAnswer() => next(_rightAnswer - 5, _rightAnswer + 5);
 
-  int randomKeyNumber(List<int> randomKeyList) {
+  int _randomKeyNumber(List<int> randomKeyList) {
     print(randomKeyList.length);
     int randomKey = 20;
     while (randomKey == 20) {
@@ -38,29 +41,39 @@ class Game {
     return randomKey;
   }
 
-  void clearAnswers() => answers.clear();
+  void clearAnswers() => _answers.clear();
 
-  void generateWrongAnswers(List<int> randomKeyList) {
-    while (answers.length < 4) {
-      wrongAnswer = generateWrongAnswer();
-      print(wrongAnswer);
-      if (wrongAnswer != rightAnswer) {
-        if (!answers.containsValue(wrongAnswer)) {
-          answers[randomKeyNumber(randomKeyList)] = wrongAnswer;
+  void checkForRightAnswer(int key) {
+    if (key == _rightAnswerKey) {
+      _score++;
+    }
+  }
+
+  int getScore() => _score;
+
+  void _generateWrongAnswers(List<int> randomKeyList) {
+    while (_answers.length < 4) {
+      _wrongAnswer = _generateWrongAnswer();
+      print(_wrongAnswer);
+      if (_wrongAnswer != _rightAnswer) {
+        if (!_answers.containsValue(_wrongAnswer)) {
+          _answers[_randomKeyNumber(randomKeyList)] = _wrongAnswer;
         }
       }
     }
   }
 
   Map getAnswers() {
-    return answers;
+    return _answers;
   }
+
+  void scoreReset() => _score = 0;
 
   void generateAnswers() {
     List<int> randomKeyList = [1, 2, 3, 4];
-    generateRightAnswer(randomKeyList);
-    generateWrongAnswers(randomKeyList);
-    print(answers.toString());
+    _generateRightAnswer(randomKeyList);
+    _generateWrongAnswers(randomKeyList);
+    print(_answers.toString());
   }
 
   int next(int min, int max) => min + _random.nextInt(max - min);
